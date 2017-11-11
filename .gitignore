@@ -1,3 +1,6 @@
 .DS_Store
 
 *.pyc
+
+Recipe-finder-client/
+data/

@@ -19,21 +19,19 @@ web.config.debug = False
 
 class index:
     def GET(self):
+        i = web.input()
         with manager() as m:
             result = m.getUsers()
         return result
 
 
 class register:
-    def GET(self):
-        i = web.input()
-        m = manager()
-        res = m.register(i.username, i.password)
-        return res
 
     def POST(self):
-        input = web.input()
-        return "register post"
+        i = web.input()
+        with manager() as m:
+            res = m.register(i.username, i.password)
+        return res
 
 
 class login:
@@ -41,7 +39,10 @@ class login:
         return "login get"
 
     def POST(self):
-        return "login post"
+        i = web.input()
+        with manager() as m:
+            res = m.login(i.username, i.password)
+        return res
 
 
 class logout:

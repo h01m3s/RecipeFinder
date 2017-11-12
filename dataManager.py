@@ -47,10 +47,11 @@ class manager():
         except sqlite3.Error as se:
             # print "A database error has occured: {}".format(se.args[0])
             if se.args[0] == "UNIQUE constraint failed: users.user_name":
-                msg = "User already exist."
-            return web.HTTPError("400 Bad Request", {"Content-type": "application/json"}, msg)
+                returnJosnFailed = json.dumps({'username': "none", \
+                                        'message': 'User already exist.'})
+            raise web.BadRequest(returnJosnFailed)
         except Exception as e:
-            return web.HTTPError("400 Bad Request", {"Content-type": "application/json"}, returnJosnFailed)
+            raise web.BadRequest(returnJosnFailed)
 
     def login(self, username, password):
         returnJosnFailed = json.dumps({'username': "none", \
@@ -67,7 +68,7 @@ class manager():
             return returnJosnSuccess
 
         except Exception as e:
-            return web.HTTPError("400 Bad Request", {"Content-type": "application/json"}, returnJosnFailed)
+            raise web.BadRequest(returnJosnFailed)
 
     def addBookmark(self, username, uri):
         # NEED TO CHECK IF USERNAME EXISTS IN USER TABLE AND RESTRICT URI(UNIQUE)
@@ -81,18 +82,20 @@ class manager():
             self.conn.commit()
             return returnJosnSuccess
         except Exception as e:
-            return web.HTTPError("400 Bad Request", {"Content-type": "application/json"}, returnJosnFailed)
+            raise web.BadRequest(returnJosnFailed)
 
     def getBookmark(self, username):
+        returnJosnFailed = json.dumps({"bookmark": "none", "message":"get bookmark failed"})
         try:
             self.cursor.execute('select saved from bookmark where user_name = ?', (username,))
             res = self.cursor.fetchall()
-            returnJsonSuccess = json.dumps({"bookmark": res, "message":"get bookmark success"})
-            return returnJsonSuccess
+
+            if len(res) > 0:
+                returnJsonSuccess = json.dumps({"bookmark": res, "message":"get bookmark success"})
+                return returnJsonSuccess
+            raise web.BadRequest(returnJosnFailed)
         except Exception as e:
-            print "error when fetch bookmarks: {}".format(e)
-            returnJosnFailed = json.dumps({"bookmark": "none", "message":"get bookmark failed"})
-            return web.HTTPError("400 Bad Request", {"Content-type": "application/json"}, returnJosnFailed)
+            raise web.BadRequest(returnJosnFailed)
 
     # debug purpose
     def getUsers(self):
@@ -104,7 +107,7 @@ class manager():
             if users and bookmarks is not None:
                 return json.dumps({"users": users, "bookmarks": bookmarks})
         except Exception as e:
-            return "Fetch User Error {}".format(e)
+            raise web.BadRequest("Fetch User Error {}".format(e))
 
     # debug purpose
     def dropTable(self):

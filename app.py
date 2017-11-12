@@ -46,23 +46,20 @@ class register:
             result = m.register(username, password)
         return result
 
-    def OPTIONS(self):
-        web.header('Access-Control-Allow-Origin', '*')
-        web.header('Access-Control-Allow-Credentials', 'True')
-        # web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-        web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-        data = web.data()
-        print "data from options {}".format(data)
-        return data
+    # def OPTIONS(self):
+    #     web.header('Access-Control-Allow-Origin', '*')
+    #     web.header('Access-Control-Allow-Credentials', 'True')
+    #     # web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    #     web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+    #     data = web.data()
+    #     print "data from options {}".format(data)
+    #     return data
 
 
 class login:
     def GET(self):
         web.header('Access-Control-Allow-Origin', '*')
         web.header('Access-Control-Allow-Credentials', 'True')
-        # data = json.loads(web.data())
-        # username = data['username']
-        # password = data['password']
         try:
             i = web.input()
             username = i.username

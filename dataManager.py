@@ -30,37 +30,43 @@ class manager():
     def __enter__(self):
         return self
 
-    def register(self, userName, password):
+    def register(self, username, password):
         try:
-            self.cursor.execute('insert into users (user_name, user_password) values (?, ?)', (userName, password))
+            self.cursor.execute('insert into users (user_name, user_password) values (?, ?)', (username, password))
             self.conn.commit()
         except Exception as e:
-            return "Registration Error: {}".format(e)
-        return "User Registered."
+            returnJosn = json.dumps({"response": [{'status': False}, {'message': 'Registration Failed.'}]})
+            # return "Registration Error: {}".format(e)
+            return returnJosn
+        returnJosn = json.dumps({"response": [{'status': True}, {'message': 'User Registered.'}]})
+        return returnJosn
 
-    def login(self, userName, password):
+    def login(self, username, password):
         try:
-            self.cursor.execute('select * from users where user_name = ? and user_password = ? ', (userName, password))
+            self.cursor.execute('select * from users where user_name = ? and user_password = ? ', (username, password))
             res = self.cursor.fetchall()
             if res[0] is None:
-                return False
-            return True
+                returnJosn = json.dumps({"response": [{'status': False}, {'message': 'Login failed.'}]})
+                return returnJosn
+
+            returnJosn = json.dumps({"response": [{'status': True}, {'message': 'Logged in.'}]})
+            return returnJosn
 
         except Exception as e:
-            print "Error when check user identity {}".format(e)
-            return False
+            returnJosn = json.dumps({"response": [{'status': False}, {'message': 'Login failed.'}]})
+            return returnJosn
 
     def getUsers(self):
         results = None
         try:
             self.cursor.execute('select * from users')
-            # userNames = [row['user_name'] for row in results]
             results = self.cursor.fetchall()
         except Exception as e:
             return "Fetch User Error {}".format(e)
-        return results
+        return json.dumps({"response": {"users":results}})
 
 
+    # debug purpose
     def dropTable(self):
         try:
             self.cursor.execute('drop table if exists users')

@@ -4,6 +4,7 @@
 
 import web
 import hashlib
+import json
 from dataManager import *
 
 urls = (
@@ -19,6 +20,8 @@ web.config.debug = False
 
 class index:
     def GET(self):
+        web.header('Access-Control-Allow-Origin', '*')
+        web.header('Access-Control-Allow-Credentials', 'True')
         i = web.input()
         with manager() as m:
             result = m.getUsers()
@@ -26,31 +29,54 @@ class index:
 
 
 class register:
+    def GET(self):
+        web.header('Access-Control-Allow-Origin', '*')
+        web.header('Access-Control-Allow-Credentials', 'True')
+        data = web.data()
+        print "data from get {}".format(data)
+        return "data"
 
     def POST(self):
-        i = web.input()
+        web.header('Access-Control-Allow-Origin', '*')
+        web.header('Access-Control-Allow-Credentials', 'True')
+        web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+        data = json.loads(web.data())
+        username = data['username']
+        password = data['password']
         with manager() as m:
-            res = m.register(i.username, i.password)
-        return res
+            result = m.register(username, password)
+        return result
+
+    def OPTIONS(self):
+        web.header('Access-Control-Allow-Origin', '*')
+        web.header('Access-Control-Allow-Credentials', 'True')
+        web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+        data = web.data()
+        print "data from options {}".format(data)
+        return data
 
 
 class login:
     def GET(self):
-        return "login get"
-
-    def POST(self):
-        i = web.input()
+        web.header('Access-Control-Allow-Origin', '*')
+        web.header('Access-Control-Allow-Credentials', 'True')
+        data = json.loads(web.data())
+        username = data['username']
+        password = data['password']
         with manager() as m:
-            res = m.login(i.username, i.password)
-        return res
+            result = m.login(username, password)
+        return result
+
 
 
 class logout:
     def GET(self):
-        return "logout get"
+        web.seeother('/')
 
     def POST(self):
-        return "logout post"
+        web.seeother('/')
 
 class drop:
     def GET(self):

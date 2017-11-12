@@ -13,6 +13,8 @@ urls = (
     '/login', 'login',
     '/logout', 'logout',
     '/drop', 'drop',
+    '/updatebookmark', 'updateBookmark',
+    '/getbookmark', 'getBookmark',
     )
 
 web.config.debug = False
@@ -30,16 +32,12 @@ class index:
 
 class register:
     def GET(self):
-        web.header('Access-Control-Allow-Origin', '*')
-        web.header('Access-Control-Allow-Credentials', 'True')
-        data = web.data()
-        print "data from get {}".format(data)
-        return "data"
+        return "post method only"
 
     def POST(self):
         web.header('Access-Control-Allow-Origin', '*')
         web.header('Access-Control-Allow-Credentials', 'True')
-        web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        # web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
         web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
         data = json.loads(web.data())
         username = data['username']
@@ -51,7 +49,7 @@ class register:
     def OPTIONS(self):
         web.header('Access-Control-Allow-Origin', '*')
         web.header('Access-Control-Allow-Credentials', 'True')
-        web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        # web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
         web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
         data = web.data()
         print "data from options {}".format(data)
@@ -62,14 +60,59 @@ class login:
     def GET(self):
         web.header('Access-Control-Allow-Origin', '*')
         web.header('Access-Control-Allow-Credentials', 'True')
-        data = json.loads(web.data())
-        username = data['username']
-        password = data['password']
-        with manager() as m:
-            result = m.login(username, password)
+        # data = json.loads(web.data())
+        # username = data['username']
+        # password = data['password']
+        try:
+            i = web.input()
+            username = i.username
+            password = i.password
+            with manager() as m:
+                result = m.login(username, password)
+        except Exception as e:
+            return "Wrong parameter: {}".format(e)
         return result
 
+    def POST(self):
+        return "get method only"
 
+
+class updateBookmark:
+    def GET(self):
+        return "post method only"
+
+    def POST(self):
+        web.header('Access-Control-Allow-Origin', '*')
+        web.header('Access-Control-Allow-Credentials', 'True')
+        web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+        data = json.loads(web.data())
+        userid = data['id']
+        uri = data['uri']
+        with manager() as m:
+            result = m.addBookmark(userid, uri)
+        return result
+
+    # def OPTIONS(self):
+    #     web.header('Access-Control-Allow-Origin', '*')
+    #     web.header('Access-Control-Allow-Credentials', 'True')
+    #     web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    #     web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+    #     data = web.data()
+    #     print "data from options {}".format(data)
+    #     return data
+
+
+class getBookmark:
+    def GET(self):
+        i = web.input()
+        userid = i.id
+        with manager() as m:
+            result = m.getBookmark(userid)
+        return result
+
+    def POST(self):
+        return "post method only"
 
 class logout:
     def GET(self):

@@ -17,12 +17,12 @@ class manager():
         try:
             self.cursor.execute('create table if not exists users ( \
             id integer PRIMARY KEY AUTOINCREMENT, \
-            user_name varchar(20) NOT NULL UNIQUE, \
-            user_password varchar(40) NOT NULL)')
+            user_name VARCHAR(20) NOT NULL UNIQUE, \
+            user_password VARCHAR(40) NOT NULL)')
 
             self.cursor.execute('create table if not exists bookmark \
             (saved text not NULL, \
-            user_name varchar(20) not NULL, \
+            user_name VARCHAR(20) not NULL, \
             FOREIGN KEY(user_name) REFERENCES users(user_name))')
             self.conn.commit()
         except Exception as e:
@@ -85,11 +85,12 @@ class manager():
 
     def getBookmark(self, username):
         try:
-            self.cursor.execute('select saved from bookmark where user_name = ?', (username))
+            self.cursor.execute('select saved from bookmark where user_name = ?', (username,))
             res = self.cursor.fetchall()
             returnJsonSuccess = json.dumps({"bookmark": res, "message":"get bookmark success"})
             return returnJsonSuccess
         except Exception as e:
+            print "error when fetch bookmarks: {}".format(e)
             returnJosnFailed = json.dumps({"bookmark": "none", "message":"get bookmark failed"})
             return web.HTTPError("400 Bad Request", {"Content-type": "application/json"}, returnJosnFailed)
 

@@ -12,9 +12,9 @@ urls = (
     '/register', 'register',
     '/login', 'login',
     '/logout', 'logout',
-    '/drop', 'drop',
     '/updatebookmark', 'updateBookmark',
     '/getbookmark', 'getBookmark',
+    '/reset', 'reset'
     )
 
 web.config.debug = False
@@ -87,10 +87,10 @@ class updateBookmark:
         web.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
         web.header("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
         data = json.loads(web.data())
-        userid = data['id']
+        username = data['username']
         uri = data['uri']
         with manager() as m:
-            result = m.addBookmark(userid, uri)
+            result = m.addBookmark(username, uri)
         return result
 
     # def OPTIONS(self):
@@ -106,9 +106,9 @@ class updateBookmark:
 class getBookmark:
     def GET(self):
         i = web.input()
-        userid = i.id
+        username = i.username
         with manager() as m:
-            result = m.getBookmark(userid)
+            result = m.getBookmark(username)
         return result
 
     def POST(self):
@@ -123,21 +123,19 @@ class logout:
 
 class drop:
     def GET(self):
-        m = manager()
-        return m.dropTable()
+        with manager() as m:
+            results = m.dropTable
+        return results
+
+
+class reset:
+    def GET(self):
+        with manager() as m:
+            m.dropTable()
+            m.__init__()
+        return "reset"
 
 
 if __name__ == "__main__":
     app = web.application(urls, globals())
-    # web.config.session_parameters['cookie_name'] = 'recipeFinder'
-    # web.config.session_parameters['cookie_domain'] = None
-    # # 86400 / 24 hrs
-    # web.config.session_parameters['timeout'] = 86400
-    # web.config.session_parameters['ignore_change_ip'] = True
-    # web.config.session_parameters['secret_key'] = 'hwgWKydq4J2H'
-    # web.config.session_parameters['expired_message'] = 'Session expired'
-    # session = web.session.Session(app, web.session.DiskStore('data/sessions'), initializer={'login': False})
-    # def session_hook():
-    #     web.ctx.session = session
-    # app.add_processor(web.loadhook(session_hook))
     app.run()
